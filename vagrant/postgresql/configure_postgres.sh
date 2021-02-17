@@ -28,7 +28,6 @@ sudo systemctl enable postgresql
 cd /tmp
 sudo -u postgres psql -c "CREATE ROLE ${user_name} LOGIN PASSWORD '${password}'"
 sudo -u postgres psql -c "CREATE DATABASE ${db_name} OWNER '${user_name}'"
-sudo -u postgres psql -d ${db_name} -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public To ${user_name}"
 
 # Configure DB
 for file in `find ${shared_folder}/sql -maxdepth 1 -type f -name *.ddl`; do
@@ -39,3 +38,7 @@ for file in `find ${shared_folder}/sql -maxdepth 1 -type f -name *.sql`; do
     sudo -u postgres psql -U postgres -d ${db_name} -f "${file}"
 done
 
+# 雑に権限付与しておく
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${db_name} To ${user_name}"
+sudo -u postgres psql -d ${db_name} -c "GRANT ALL PRIVILEGES ON SCHEMA public To ${user_name}"
+sudo -u postgres psql -d ${db_name} -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public To ${user_name}"
