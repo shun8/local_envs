@@ -1,6 +1,7 @@
 DROP TABLE test;
 CREATE TABLE test (
-	test_id CHAR(5) PRIMARY KEY,
-	test_ym CHAR(6) PRIMARY KEY,
-	test_name NVARCHAR(20) NOT NULL
+	test_id CHAR(5),
+	test_ym CHAR(6),
+	test_name VARCHAR(20) NOT NULL,
+	PRIMARY KEY ( test_id, test_name )
 );

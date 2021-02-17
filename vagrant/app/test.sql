@@ -1,1 +1,2 @@
-select test_id, test_name from test;
+SET NOCOUNT ON;
+SELECT test_id, test_name FROM test;
