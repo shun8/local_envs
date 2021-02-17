@@ -1,5 +1,21 @@
 #!/bin/bash
 # 必要なパッケージ
+# sqlcmdとbcp 参考:https://docs.microsoft.com/ja-jp/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15
+if !(type "sqlcmd" > /dev/null 2>&1); then
+  echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
+  echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+fi
+
+sudo curl -o /etc/yum.repos.d/msprod.repo https://packages.microsoft.com/config/rhel/8/prod.repo
+sudo yum -y remove unixODBC-utf16 unixODBC-utf16-devel #to avoid conflicts
+sudo ACCEPT_EULA=Y yum -y install msodbcsql17
+# optional: for bcp and sqlcmd
+sudo ACCEPT_EULA=Y yum -y install mssql-tools
+# optional: for unixODBC development headers
+sudo yum -y install unixODBC-devel
+
+
+# 個人的に使うツールとか
 # sudo yum -y install emacs
 sudo yum -y install gcc
 sudo yum -y install wget
@@ -9,7 +25,7 @@ sudo yum -y install gnutls-utils
 sudo yum -y install gnutls-devel
 sudo yum -y install ncurses-devel
 
-# emacs 26.3入れた http://mirrors.ibiblio.org/gnu/ftp/gnu/emacs/
+# emacs 26.3入れた(yumで入るバージョンが古いのでソースから) http://mirrors.ibiblio.org/gnu/ftp/gnu/emacs/
 # https://suwaru.tokyo/%E3%80%90centos%E3%80%91%E5%84%AA%E3%81%97%E3%81%84emacs%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E6%96%B9%E6%B3%95%E3%80%90ubuntu%E3%80%91/
 # ./configure はオプション無し(gnutls-utilsインストールしてから)
 if !(type "emacs" > /dev/null 2>&1); then

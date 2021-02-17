@@ -1,0 +1,5 @@
+DROP TABLE test;
+CREATE TABLE test (
+	test_id CHAR(5) PRIMARY KEY,
+	test_name NVARCHAR(20) NOT NULL
+);
