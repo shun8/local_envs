@@ -1,0 +1,4 @@
+DB_NAME=testdb
+USER_NAME=testuser
+PORT=5432
+HOST=192.168.33.11

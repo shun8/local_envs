@@ -14,6 +14,8 @@ sudo ACCEPT_EULA=Y yum -y install mssql-tools
 # optional: for unixODBC development headers
 sudo yum -y install unixODBC-devel
 
+# psql
+sudo yum -y install postgresql
 
 # 個人的に使うツールとか
 # sudo yum -y install emacs

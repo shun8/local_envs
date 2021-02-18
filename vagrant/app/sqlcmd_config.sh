@@ -1,0 +1,4 @@
+DB_NAME=testdb
+USER_NAME=sa
+PASSWORD=P@ssw0rd
+HOST=192.168.33.12
