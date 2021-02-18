@@ -3,9 +3,9 @@ function usage {
   cat <<EOM
 Usage: $(basename "$0") [OPTION]...
   -h Display help
-  -i SQL file     <string> SQL file path (Required)
+  -f filepath     <string> filepath (Required)
   -m Month        <string> yyyymm (Required)
-  -c Config file  <string> Config file path (Default ~/sqlcmd_config.sh)
+  -c Config file  <string> Config file path (Default ~/scp_config.sh)
 EOM
   exit 2
 }
@@ -14,14 +14,14 @@ EOM
 script_dir=$(cd $(dirname ${0}) && pwd)
 
 # デフォルト値設定
-config_file=~/sqlcmd_config.sh
+config_file=~/scp_config.sh
 
 # 引数の処理
-while getopts ":i:m:c:h" OPTKEY; do
+while getopts ":f:m:c:h" OPTKEY; do
   case ${OPTKEY} in
-    i)
+    f)
       # 絶対パスに変換
-      sql_file=$(cd $(dirname ${OPTARG}) && pwd)/$(basename ${OPTARG})
+      filepath=$(cd $(dirname ${OPTARG}) && pwd)/$(basename ${OPTARG})
       ;;
     m)
       yyyymm=${OPTARG}
@@ -37,8 +37,8 @@ while getopts ":i:m:c:h" OPTKEY; do
 done
 
 # 必須項目
-if [ -z "${sql_file}" ] ; then
-  echo "SQL file is required."
+if [ -z "${filepath}" ] ; then
+  echo "Filepath is required."
   exit 1
 fi
 if [ -z "${yyyymm}" ] ; then
@@ -50,15 +50,14 @@ fi
 source ${config_file}
 
 tmp_file=`mktemp /tmp/tmp.XXXXXX`
-sqlcmd -d ${DB_NAME} -U ${USER_NAME} -P ${PASSWORD} -S ${HOST} -i ${sql_file} -s , -W -o ${tmp_file}
+scp -i ${KEY_FILE} -P ${PORT} -o "StrictHostKeyChecking=no" ${USER_NAME}@${HOST}:${filepath} ${tmp_file}
 result=$?
 if [ ${result} -ne 0 ] ; then
-  echo "sqlcmd error."
+  echo "scp error."
   exit ${result}
 fi
 
 # CSV編集
-sed -i -r "/^[-,]+$/d" ${tmp_file}
 sed -i -r "s/^([^,]+)/\1,${yyyymm}/" ${tmp_file}
 
 # posgresへのインポート実行
