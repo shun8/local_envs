@@ -23,7 +23,7 @@ sudo yum -y install zsh
 # python
 sudo yum -y install python38
 sudo curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
-. ~/.bash_profile
+source ~/.bash_profile
 poetry config virtualenvs.in-project true
 
 # 個人的に使うツールとか
