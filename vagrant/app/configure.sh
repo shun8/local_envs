@@ -17,6 +17,15 @@ sudo yum -y install unixODBC-devel
 # psql
 sudo yum -y install postgresql
 
+# zsh (個人的なやつだけどpoetryの設定が入りそうなので先に)
+sudo yum -y install zsh
+
+# python
+sudo yum -y install python38
+sudo curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
+. ~/.bash_profile
+poetry config virtualenvs.in-project true
+
 # 個人的に使うツールとか
 # sudo yum -y install emacs
 sudo yum -y install gcc
@@ -45,7 +54,6 @@ fi
 
 sudo yum -y install tmux
 sudo yum -y install git
-sudo yum -y install zsh
 sudo yum -y install jq
 sudo yum -y install net-tools
 
