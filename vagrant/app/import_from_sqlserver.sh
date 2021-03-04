@@ -3,9 +3,10 @@ function usage {
   cat <<EOM
 Usage: $(basename "$0") [OPTION]...
   -h Display help
-  -i SQL file     <string> SQL file path (Required)
-  -m Month        <string> yyyymm (Required)
-  -c Config file  <string> Config file path (Default ~/sqlcmd_config.sh)
+  -s SQL file                 <string> SQL file path (Required)
+  -m Month                    <string> yyyymm (Required)
+  -t Table name (import to)   <string> table_name [ ( column_name [, ...] ) ] (Required)
+  -c Config file              <string> Config file path (Default ~/sqlcmd_config.sh)
 EOM
   exit 2
 }
@@ -17,14 +18,17 @@ script_dir=$(cd $(dirname ${0}) && pwd)
 config_file=~/sqlcmd_config.sh
 
 # 引数の処理
-while getopts ":i:m:c:h" OPTKEY; do
+while getopts ":s:m:t:c:h" OPTKEY; do
   case ${OPTKEY} in
-    i)
+    s)
       # 絶対パスに変換
       sql_file=$(cd $(dirname ${OPTARG}) && pwd)/$(basename ${OPTARG})
       ;;
     m)
       yyyymm=${OPTARG}
+      ;;
+    t)
+      table=${OPTARG}
       ;;
     c)
       # 絶対パスに変換
@@ -43,6 +47,10 @@ if [ -z "${sql_file}" ] ; then
 fi
 if [ -z "${yyyymm}" ] ; then
   echo "Month is required."
+  exit 1
+fi
+if [ -z "${table}" ] ; then
+  echo "Table name is required."
   exit 1
 fi
 
@@ -64,7 +72,7 @@ fi
 sed -i -r "s/^([^,]+)/\1,${yyyymm}/" ${tmp_file}
 
 # posgresへのインポート実行
-${script_dir}/import_to_postgres.sh -i ${tmp_file}
+${script_dir}/import_to_postgres.sh -i ${tmp_file} -t ${table}
 result=$?
 if [ ${result} -ne 0 ] ; then
   exit ${result}

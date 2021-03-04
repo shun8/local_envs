@@ -38,3 +38,14 @@ Vagrantコマンド: https://qiita.com/oreo3@github/items/4054a4120ccc249676d9
 参考になりそうな記事: https://qiita.com/KZ-taran/items/56c1d39dbbdd26df6faf
 
 ### SQLServer
+
+## 他関係ないメモ
+### EC2にセッションマネージャで接続
+ブラウザではなくAWS CLI経由で接続する。(`ssh`, `scp`コマンド使う)
+https://qiita.com/hayao_k/items/78b5bfe030ad8a053e93
+
+1. AWS CLIインストール
+2. IAMアクセスキー発行・登録
+3. Session Manager Pluginインストール
+4. SSH Configファイル作成
+5. SSHできる(鍵はインスタンスに登録)
