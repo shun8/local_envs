@@ -57,7 +57,8 @@ if [ ${result} -ne 0 ] ; then
   exit ${result}
 fi
 
-# CSV編集
+# CSV編集(必要なら)
+#yyyymmのカラムを付加
 sed -i -r "s/^([^,]+)/\1,${yyyymm}/" ${tmp_file}
 
 # posgresへのインポート実行

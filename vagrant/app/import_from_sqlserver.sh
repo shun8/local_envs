@@ -49,16 +49,18 @@ fi
 # Config呼び出し
 source ${config_file}
 
-tmp_file=`mktemp /tmp/tmp.XXXXXX`
-sqlcmd -d ${DB_NAME} -U ${USER_NAME} -P ${PASSWORD} -S ${HOST} -i ${sql_file} -s , -W -o ${tmp_file}
+tmp_file=$(mktemp /tmp/tmp.XXXXXX)
+sqlcmd -d ${DB_NAME} -U ${USER_NAME} -P ${PASSWORD} -S ${HOST} -i ${sql_file} -s, -W -h -1 -o ${tmp_file}
 result=$?
 if [ ${result} -ne 0 ] ; then
   echo "sqlcmd error."
   exit ${result}
 fi
 
-# CSV編集
-sed -i -r "/^[-,]+$/d" ${tmp_file}
+# CSV編集(必要なら)
+#------,---の行を削除(ヘッダありの場合に使用)
+#sed -i -r "/^[-,]+$/d" ${tmp_file}
+#yyyymmのカラムを付加
 sed -i -r "s/^([^,]+)/\1,${yyyymm}/" ${tmp_file}
 
 # posgresへのインポート実行

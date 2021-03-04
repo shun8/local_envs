@@ -3,26 +3,32 @@ function usage {
   cat <<EOM
 Usage: $(basename "$0") [OPTION]...
   -h Display help
-  -i CSV file     <string> CSV file path (Required)
-  -d Header       <boolean> Exists header (Default FALSE)
-  -c Config file  <string> Config file path (Default ~/psql_config.sh)
+  -o CSV file Path <string> Output CSV file path (Required)
+  -d Header        <boolean> Add header row (Default TRUE)
+  -s SQL file Path <string> SQL file path (Required)
+  -c Config file   <string> Config file path (Default ~/psql_config.sh)
 EOM
   exit 2
 }
 
 # デフォルト値設定
-header="FALSE"
+header=""
 config_file=~/psql_config.sh
 
 # 引数の処理
 while getopts ":i:c:h" OPTKEY; do
   case ${OPTKEY} in
-    i)
+    o)
       # 絶対パスに変換
       csv_file=$(cd $(dirname ${OPTARG}) && pwd)/$(basename ${OPTARG})
       ;;
+    s)
+      # 絶対パスに変換
+      sql_file=$(cd $(dirname ${OPTARG}) && pwd)/$(basename ${OPTARG})
+      ;;
     d)
-      header=${OPTARG}
+      # 列名と行数表示を無効にするオプション
+      header='-t'
       ;;
     c)
       # 絶対パスに変換
@@ -36,14 +42,19 @@ done
 
 # 必須項目
 if [ -z "${csv_file}" ] ; then
-  echo "CSV file is required."
+  echo "Output CSV file is required."
+  exit 1
+fi
+if [ -z "${sql_file}" ] ; then
+  echo "SQL file is required."
   exit 1
 fi
 
 # Config呼び出し
 source ${config_file}
 
-psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -c "\COPY test FROM '${csv_file}' WITH ( DELIMITER ',', FORMAT CSV, HEADER ${header})" 
+psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -f ${sql_file} -A -F, ${header} | grep -v "^(" > ${csv_file}
+
 result=$?
 if [ ${result} -ne 0 ] ; then
   echo "psql error."
