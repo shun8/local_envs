@@ -58,7 +58,7 @@ fi
 source ${config_file}
 
 tmp_file=$(mktemp /tmp/tmp.XXXXXX)
-sqlcmd -d ${DB_NAME} -U ${USER_NAME} -P ${PASSWORD} -S ${HOST} -i ${sql_file} -s, -W -h -1 -o ${tmp_file}
+sqlcmd -d ${DB_NAME} -U ${USER_NAME} -P ${PASSWORD} -S ${HOST} -i ${sql_file} -s, -W -h -1 -w 65535 -o ${tmp_file}
 result=$?
 if [ ${result} -ne 0 ] ; then
   echo "sqlcmd error."
