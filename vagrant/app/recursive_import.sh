@@ -41,10 +41,10 @@ fi
 for file in $(ls ${sql_file_dir}/*.sql) ; do
     table=$(basename ${file})
     ${script_dir}/import_from_sqlserver.sh -s ${file} -t ${table%.*} -m ${yyyymm}
+    result=$?
+    if [ ${result} -ne 0 ] ; then
+      exit ${result}
+    fi
 done
-result=$?
-if [ ${result} -ne 0 ] ; then
-  exit ${result}
-fi
 
 exit 0

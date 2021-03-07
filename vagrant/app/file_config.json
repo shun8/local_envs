@@ -1,0 +1,10 @@
+[
+    {
+        "file_path": "/vagrant/test_sjis.csv",
+        "table": "test2"
+    },
+    {
+        "file_path": "/vagrant/test_sjis_2.csv",
+        "table": "test3"
+    }
+]

@@ -69,10 +69,10 @@ fi
 #------,---の行を削除(ヘッダありの場合に使用)
 #sed -i -r "/^[-,]+$/d" ${tmp_file}
 #yyyymmのカラムを付加
-sed -i -r "s/^([^,]+)/\1,${yyyymm}/" ${tmp_file}
+sed -i -r "s/$/,${yyyymm}/" ${tmp_file}
 
 # posgresへのインポート実行
-${script_dir}/import_to_postgres.sh -i ${tmp_file} -t ${table}
+${script_dir}/import_to_postgres.sh -i ${tmp_file} -t ${table} -m ${yyyymm}
 result=$?
 if [ ${result} -ne 0 ] ; then
   exit ${result}
