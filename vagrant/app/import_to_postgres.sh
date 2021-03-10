@@ -13,6 +13,8 @@ EOM
   exit 2
 }
 
+ym_col_name=test_ym
+
 # デフォルト値設定
 encoding_option=""
 header="FALSE"
@@ -64,7 +66,7 @@ fi
 # Config呼び出し
 source ${config_file}
 
-psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -c "DELETE FROM ${table} WHERE year_month = '${yyyymm}'"
+psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -c "DELETE FROM ${table} WHERE ${ym_col_name} = '${yyyymm}'"
 result=$?
 if [ ${result} -ne 0 ] ; then
   echo "psql delete error."

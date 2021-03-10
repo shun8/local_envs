@@ -1,5 +1,7 @@
 #!/bin/bash
 # 必要なパッケージ
+sudo yum -y install expect
+
 # sqlcmdとbcp 参考:https://docs.microsoft.com/ja-jp/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15
 if !(type "sqlcmd" > /dev/null 2>&1); then
   echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
@@ -21,7 +23,7 @@ sudo yum -y install postgresql
 sudo yum -y install zsh
 
 # python
-sudo yum -y install python38
+sudo yum -y install python3
 sudo curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
 source ~/.bash_profile
 poetry config virtualenvs.in-project true

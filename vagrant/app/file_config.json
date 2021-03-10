@@ -1,7 +1,11 @@
 [
     {
         "file_path": "/vagrant/test_sjis.csv",
-        "table": "test2"
+        "table": "test2",
+        "null_to_zero_cols": [
+            0,
+            1
+        ]
     },
     {
         "file_path": "/vagrant/test_sjis_2.csv",
