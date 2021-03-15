@@ -55,7 +55,7 @@ fi
 
 # SES動作未検証
 tmp_file=$(mktemp /tmp/tmp.XXXXXX)
-cp ${ses_json} $tmp_file}
+cp ${ses_json} ${tmp_file}
 sed -i "s/presigned_url/${presigned_url}/" ${tmp_file}
 # file:// プレフィックスは相対パスで解釈される
 cd /tmp

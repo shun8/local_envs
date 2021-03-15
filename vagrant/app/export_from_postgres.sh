@@ -3,32 +3,40 @@ function usage {
   cat <<EOM
 Usage: $(basename "$0") [OPTION]...
   -h Display help
-  -o CSV file Path <string> Output CSV file path (Required)
-  -d Header        <boolean> Add header row (Default TRUE)
-  -s SQL file Path <string> SQL file path (Required)
-  -c Config file   <string> Config file path (Default ~/psql_config.sh)
+  -o CSV file     <string> output CSV file path (Required)
+  -f SQL file     <string> SQL file (Required)
+  -e Encoding     <string> CSV file Encode (Default Not specified)
+  -d Header       <boolean> Exists header (Default TRUE)
+  -m Month        <string> yyyymm for output (Required)
+  -c Config file  <string> Config file path (Default ~/psql_config.sh)  
 EOM
   exit 2
 }
 
 # デフォルト値設定
-header=""
+encoding_option=""
+header="TRUE"
 config_file=~/psql_config.sh
 
 # 引数の処理
-while getopts ":i:c:h" OPTKEY; do
+while getopts ":o:f:e:d:m:c:h" OPTKEY; do
   case ${OPTKEY} in
     o)
       # 絶対パスに変換
       csv_file=$(cd $(dirname ${OPTARG}) && pwd)/$(basename ${OPTARG})
       ;;
-    s)
+    f)
       # 絶対パスに変換
       sql_file=$(cd $(dirname ${OPTARG}) && pwd)/$(basename ${OPTARG})
       ;;
+    e)
+      encoding_option=", ENCODING "${OPTARG}
+      ;;
     d)
-      # 列名と行数表示を無効にするオプション
-      header='-t'
+      header=${OPTARG}
+      ;;
+    m)
+      yyyymm=${OPTARG}
       ;;
     c)
       # 絶対パスに変換
@@ -42,19 +50,22 @@ done
 
 # 必須項目
 if [ -z "${csv_file}" ] ; then
-  echo "Output CSV file is required."
+  echo "CSV file is required."
   exit 1
 fi
 if [ -z "${sql_file}" ] ; then
   echo "SQL file is required."
   exit 1
 fi
+if [ -z "${yyyymm}" ] ; then
+  echo "Month is required."
+  exit 1
+fi
 
 # Config呼び出し
 source ${config_file}
-
-psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -f ${sql_file} -A -F, ${header} | grep -v "^(" > ${csv_file}
-
+sql=$(sed -r "s/\r//g" "${sql_file}" | tr -d ";" | sed -r "s/--.*$//" | sed "s/%(yyyymm)s/'${yyyymm}'/g")
+psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -c "\COPY (${sql}) TO '${output}' WITH ( FORMAT CSV, HEADER ${header}${encoding_option})"
 result=$?
 if [ ${result} -ne 0 ] ; then
   echo "psql error."

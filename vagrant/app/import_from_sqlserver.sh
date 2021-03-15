@@ -6,6 +6,7 @@ Usage: $(basename "$0") [OPTION]...
   -s SQL file                 <string> SQL file path (Required)
   -m Month                    <string> yyyymm (Required)
   -t Table name (import to)   <string> table_name [ ( column_name [, ...] ) ] (Required)
+  -v List of Vars ([var1=Value1,var2=Value2,...]) <list> List of sqlcmd params (Defarult [])
   -c Config file              <string> Config file path (Default ~/sqlcmd_config.sh)
 EOM
   exit 2
@@ -16,9 +17,10 @@ script_dir=$(cd $(dirname ${0}) && pwd)
 
 # デフォルト値設定
 config_file=~/sqlcmd_config.sh
+var_list="[]"
 
 # 引数の処理
-while getopts ":s:m:t:c:h" OPTKEY; do
+while getopts ":s:m:t:v:c:h" OPTKEY; do
   case ${OPTKEY} in
     s)
       # 絶対パスに変換
@@ -29,6 +31,9 @@ while getopts ":s:m:t:c:h" OPTKEY; do
       ;;
     t)
       table=${OPTARG}
+      ;;
+    v)
+      var_list=${OPTARG}
       ;;
     c)
       # 絶対パスに変換
@@ -57,8 +62,17 @@ fi
 # Config呼び出し
 source ${config_file}
 
+l_var_op=""
+len=$(echo "${var_list}" | jq length)
+for i in $( seq 0 $(($len - 1)) ); do
+  l_var=$(echo "${var_list}" | jq -r .[$i])
+  if [ ${l_var} != "null" ] ; then
+    var_op="${var_op} -v ${l_var}"
+  fi
+done
+
 tmp_file=$(mktemp /tmp/tmp.XXXXXX)
-sqlcmd -d ${DB_NAME} -U ${USER_NAME} -P ${PASSWORD} -S ${HOST} -i ${sql_file} -s, -W -h -1 -w 65535 -o ${tmp_file}
+sqlcmd -d ${DB_NAME} -U ${USER_NAME} -P ${PASSWORD} -S ${HOST} -i ${sql_file} -s, -W -h -1 -w 65535 -o ${tmp_file}${var_op}
 result=$?
 if [ ${result} -ne 0 ] ; then
   echo "sqlcmd error."
