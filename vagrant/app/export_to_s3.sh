@@ -79,7 +79,7 @@ for i in $( seq 0 $(($len - 1)) ); do
   s3_presign_expires_in=$(echo "${list}" | jq -r .[$i].s3.presign_expires_in)
   presigned_url=$(upload_and_presign ${s3_bucket} ${s3_key} ${tmp_file} ${s3_presign_expires_in})
 
-  presigned_urls=${presigned_urls}"${s3_bucket}/${s3_key}\n${presigned_url}\n"
+  presigned_urls=${presigned_urls}"${s3_bucket}/${s3_key}\n<${presigned_url}>\n"
   rm ${tmp_file}
 done
 
