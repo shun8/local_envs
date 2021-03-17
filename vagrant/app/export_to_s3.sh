@@ -14,7 +14,7 @@ function upload_and_presign {
   local key=$2
   local body=$3
   local presign_expires_in=$4
-  aws s3api put_object --bucket ${bucket} --key ${key} --body ${body}
+  local put_obj_result=$(aws s3api put-object --bucket ${bucket} --key ${key} --body ${body})
   result=$?
   if [ ${result} -ne 0 ] ; then
     echo "s3 upload error."
@@ -56,7 +56,7 @@ done
 
 venv_path=$(jq -r ".venv_path" ${json_file})
 xlsx_exportpy_path=$(jq -r ".xlsx_exportpy_path" ${json_file})
-csv_exportsh_path=$(jq -r "csv_exportsh_path" ${json_file})
+csv_exportsh_path=$(jq -r ".csv_exportsh_path" ${json_file})
 
 presigned_urls=""
 
@@ -103,7 +103,7 @@ for i in $( seq 0 $(($len - 1)) ); do
   s3_presign_expires_in=$(echo "${list}" | jq -r .[$i].s3.presign_expires_in)
   presigned_url=$(upload_and_presign ${s3_bucket} ${s3_key} ${tmp_file} ${s3_presign_expires_in})
 
-  presigned_urls=${presigned_urls}"${s3_bucket}/${s3_key}\n${presigned_url}\n"
+  presigned_urls=${presigned_urls}"${s3_bucket}/${s3_key}\n<${presigned_url}>\n"
   rm ${tmp_file}
 done
 
@@ -114,8 +114,8 @@ mail_text=$(jq -r ".mail.text" ${json_file} | sed "s/yyyymm/${yyyymm}/g")"\n"${p
 list=$(jq ".mail.to" ${json_file})
 len=$(echo "${list}" | jq length)
 for i in $( seq 0 $(($len - 1)) ); do
-  mailto=$(echo "${list}" | jq -r .[$i])
-  aws ses send-email --to ${mail_to} --from ${mail_from} --subject ${mail_subject} --text $(echo -e "${mail_text}")
+  mail_to=$(echo "${list}" | jq -r .[$i])
+  aws ses send-email --to "${mail_to}" --from "${mail_from}" --subject "${mail_subject}" --text "$(echo -e "${mail_text}")"
   result=$?
   if [ ${result} -ne 0 ] ; then
     echo "ses error."
