@@ -1,0 +1,45 @@
+{
+    "venv_path": "",
+    "xlsx_exportpy_path": "",
+    "csv_exportsh_path": "",
+    "mail": {
+        "to": [
+            "test@test.com"
+        ],
+        "from": "test@test.com",
+        "subject": "test_yyyymm",
+        "text": "files\nexport test\n"
+    },
+    "files": {
+        "xlsx": [
+            {
+                "s3": {
+                    "key": "test_yyyymm.xlsx",
+                    "bucket": "bucket_name",
+                    "presign_expires_in" : 86400
+                },
+                "formatfile": ""
+            }
+        ],
+        "csv": [
+            {
+                "s3": {
+                    "key": "test_yyyymm.csv",
+                    "bucket": "bucket_name",
+                    "presign_expires_in" : 86400
+                },
+                "sqlfile": "",
+                "encoding": "SJIS"
+            },
+            {
+                "s3": {
+                    "key": "test_yyyymm.csv",
+                    "bucket": "bucket_name",
+                    "presign_expires_in" : 86400
+                },
+                "sqlfile": "",
+                "encoding": "SJIS"
+            }
+        ]
+    }
+}

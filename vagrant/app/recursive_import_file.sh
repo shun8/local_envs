@@ -14,7 +14,6 @@ script_dir=$(cd $(dirname ${0}) && pwd)
 
 # デフォルト値設定
 json_file=~/file_config.json
-this_month=``
 yyyymm=$(date -d "$(date +'%Y-%m-01') 1 month ago" +'%Y%m')
 
 # 引数の処理
