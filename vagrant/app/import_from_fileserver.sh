@@ -102,7 +102,7 @@ sed -i -r 's/$/,"'"${yyyymm}"'"/' ${tmp_file}
 len=$(echo ${null_to_zero_cols} | jq length)
 for i in $( seq 0 $(($len - 1)) ); do
   col_i=$(echo ${null_to_zero_cols} | jq -r .[$i])
-  sed -i -r 's/^([^,]+,){'"${col_i}"'}""/\1"0"/' ${tmp_file}
+  sed -i -r 's/^([^,]*,){'"${col_i}"'}""/\1"0"/' ${tmp_file}
 done
 
 # posgresへのインポート実行
