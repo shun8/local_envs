@@ -1,0 +1,18 @@
+[
+    {
+        "file_path": "/vagrant/testsql/test4.sql",
+        "table": "test2"
+    },
+    {
+        "file_path": "/vagrant/testsql/test5.sql",
+        "table": "test3",
+        "vars": [
+            "test_id_1='upd01'",
+            "test_name_1='test1'",
+            "test_id_2='upd02'",
+            "test_name_2='yyyymm'",
+            "test_id_3='upd03'",
+            "test_name_3='update_name_3'"
+        ]
+    }
+]
