@@ -1,0 +1,19 @@
+{
+    "mail": {
+        "to": [
+            "test@test.com"
+        ],
+        "from": "test@test.com",
+        "subject": "test_yyyymm",
+        "text": "files\nexport test\n"
+    },
+    "commands": [
+        {
+            "command": "",
+            "options": [
+                "",
+                ""
+            ]
+        }
+    ]
+}
