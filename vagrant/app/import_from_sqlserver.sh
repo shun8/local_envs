@@ -62,17 +62,17 @@ fi
 # Config呼び出し
 source ${config_file}
 
-l_var_op=""
+vars_op=""
 len=$(echo "${var_list}" | jq length)
 for i in $( seq 0 $(($len - 1)) ); do
   l_var=$(echo "${var_list}" | jq -r .[$i])
   if [ ${l_var} != "null" ] ; then
-    var_op="${var_op} -v ${l_var}"
+    vars_op="${vars_op} -v ${l_var}"
   fi
 done
 
 tmp_file=$(mktemp /tmp/tmp.XXXXXX)
-sqlcmd -d ${DB_NAME} -U ${USER_NAME} -P ${PASSWORD} -S ${HOST} -i ${sql_file} -s, -W -h -1 -w 65535 -o ${tmp_file}${var_op}
+sqlcmd -d ${DB_NAME} -U ${USER_NAME} -P ${PASSWORD} -S ${HOST} -i ${sql_file} -s, -W -h -1 -w 65535 -o ${tmp_file}${vars_op}
 result=$?
 if [ ${result} -ne 0 ] ; then
   echo "sqlcmd error."

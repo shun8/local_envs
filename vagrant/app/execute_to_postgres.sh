@@ -54,9 +54,9 @@ fi
 # Config呼び出し
 source ${config_file}
 
-l_var_op=""
+vars_op=""
 len=$(echo "${var_list}" | jq length)
-for i in $( seq 0 $(($len - 1)) ); do
+for i in $(seq 0 $(($len - 1))); do
   l_var=$(echo "${var_list}" | jq -r .[$i])
   if [ ${l_var} != "null" ] ; then
     vars_op="${vars_op} -v ${l_var}"
@@ -71,7 +71,7 @@ if [ -n "${table}" ] ; then
     exit ${result}
   fi
 fi
-psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -f ${sql_file}${var_op}
+psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -f ${sql_file}${vars_op}
 result=$?
 if [ ${result} -ne 0 ] ; then
   echo "psql copy error."

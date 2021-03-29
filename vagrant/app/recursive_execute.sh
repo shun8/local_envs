@@ -58,14 +58,13 @@ len=$(jq ".commands | length" ${json_file})
 for i in $(seq 0 $(($len - 1))); do
   command=$(jq -r .commands[$i].command ${json_file})
   options=$(jq -r .commands[$i].options ${json_file})
+  options_op=""
   if [ "${options}" != "null" ] ; then
     op_len=$(echo "${options}" | jq length)
     for j in $(seq 0 $((${op_len} - 1))); do
       option=$(echo "${options}" | jq -r .[$j])
       options_op="$(echo "${options_op} ${option}" | sed "s/yyyymm/${yyyymm}/g")"
     done
-  else
-    options_op=""
   fi
 
   echo "$(date '+%Y-%m-%dT%H:%M:%S') START :  ${command} -m ${yyyymm} ${options_op}" >> "${log_file}"
