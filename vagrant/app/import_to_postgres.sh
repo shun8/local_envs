@@ -9,7 +9,6 @@ Usage: $(basename "$0") [OPTION]...
   -t Table name       <string> table_name [ ( column_name [, ...] ) ] (Required)
   -m Month            <string> yyyymm for delete (Required)
   -c Config file      <string> Config file path (Default ~/psql_config.sh)
-  -s File migrate dir <string> CSV file migration dir (Default /vagrant/migration/yyyymm)
 EOM
   exit 2
 }
@@ -79,9 +78,7 @@ psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -c "\COPY ${table} FROM '$
 result=$?
 if [ ${result} -ne 0 ] ; then
   echo "psql copy error."
+  exit ${result}
 fi
 
-migration_dir="$(echo "${migration_dir}" | sed "s/yyyymm/${yyyymm}/g")"
-mkdir -p ${migration_dir}
-cp "${csv_file}" "${migration_dir}/${table}.csv"
-exit ${result}
+exit 0
