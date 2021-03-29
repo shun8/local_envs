@@ -63,11 +63,13 @@ for i in $( seq 0 $(($len - 1)) ); do
   fi
 done
 
-psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -c "DELETE FROM ${table} WHERE ${ym_col_name} = '${yyyymm}'"
-result=$?
-if [ ${result} -ne 0 ] ; then
-  echo "psql delete error."
-  exit ${result}
+if [ -n "${table}" ] ; then
+  psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -c "DELETE FROM ${table} WHERE ${ym_col_name} = '${yyyymm}'"
+  result=$?
+  if [ ${result} -ne 0 ] ; then
+    echo "psql delete error."
+    exit ${result}
+  fi
 fi
 psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -f ${sql_file}${var_op}
 result=$?
