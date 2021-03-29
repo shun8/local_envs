@@ -9,13 +9,13 @@ EOM
   exit 2
 }
 
-# TODO
-function send_mail {
-  # SES
-  mail_from=$(jq -r ".mail.from" ${json_file})
-  mail_subject=$(jq -r ".mail.subject" ${json_file} | sed "s/yyyymm/${yyyymm}/g")
-  mail_text=$(jq -r ".mail.text" ${json_file} | sed "s/yyyymm/${yyyymm}/g")"\n"${presigned_urls}
-  list=$(jq ".mail.to" ${json_file})
+function send_error_mail {
+  local mail_config=$1
+  local error_text=$2
+  local from=$(echo "${mail_config}" | jq -r ".from")
+  local subject=$(echo "${mail_config}" | jq -r ".subject" | sed "s/yyyymm/${yyyymm}/g")
+  local text=$(echo "${mail_config}" | jq -r ".text" | sed "s/yyyymm/${yyyymm}/g")"\n"${error_text}
+  list=$(echo "${mail_config}" |jq ".to")
   len=$(echo "${list}" | jq length)
   for i in $( seq 0 $(($len - 1)) ); do
     mail_to=$(echo "${list}" | jq -r .[$i])
@@ -51,7 +51,10 @@ while getopts ":j:m:h" OPTKEY; do
   esac
 done
 
-len=$(jq ".commands[] | length" ${json_file})
+log_file=$(jq -r .log ${json_file})
+log_file=$(cd $(dirname ${log_file}) && pwd)/$(basename ${log_file})
+
+len=$(jq ".commands | length" ${json_file})
 for i in $(seq 0 $(($len - 1))); do
   command=$(jq -r .commands[$i].command ${json_file})
   options=$(jq -r .commands[$i].options ${json_file})
@@ -59,17 +62,22 @@ for i in $(seq 0 $(($len - 1))); do
     op_len=$(echo "${options}" | jq length)
     for j in $(seq 0 $((${op_len} - 1))); do
       option=$(echo "${options}" | jq -r .[$j])
-      options_op="$(echo ${options} | sed "s/yyyymm/${yyyymm}/g")"
+      options_op="$(echo "${options_op} ${option}" | sed "s/yyyymm/${yyyymm}/g")"
     done
   else
     options_op=""
   fi
 
-  ${command} -m ${yyyymm} ${options_op}
+  echo "$(date '+%Y-%m-%dT%H:%M:%S') START :  ${command} -m ${yyyymm} ${options_op}" >> "${log_file}"
+  ${command} -m ${yyyymm} ${options_op} >> ${log_file} 2>&1
   result=$?
   if [ ${result} -ne 0 ] ; then
+    echo "$(date '+%Y-%m-%dT%H:%M:%S') ERROR :  ${command} -m ${yyyymm} ${options_op}" >> "${log_file}"
+    mail_config="$(jq -r .mail ${json_file})"
+    send_error_mail "${mail_config}" "ERROR :  ${command} -m ${yyyymm} ${options_op}"
     exit ${result}
   fi
+  echo "$(date '+%Y-%m-%dT%H:%M:%S') FINISH:  ${command} -m ${yyyymm} ${options_op}" >> "${log_file}"
 done
 
 exit 0

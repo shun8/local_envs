@@ -3,17 +3,19 @@ function usage {
   cat <<EOM
 Usage: $(basename "$0") [OPTION]...
   -h Display help
-  -i CSV file     <string> CSV file path (Required)
-  -e Encoding     <string> CSV file Encode (Default Not specified)
-  -d Header       <boolean> Exists header (Default FALSE)
-  -t Table name   <string> table_name [ ( column_name [, ...] ) ] (Required)
-  -m Month        <string> yyyymm for delete (Required)
-  -c Config file  <string> Config file path (Default ~/psql_config.sh)  
+  -i CSV file         <string> CSV file path (Required)
+  -e Encoding         <string> CSV file Encode (Default Not specified)
+  -d Header           <boolean> Exists header (Default FALSE)
+  -t Table name       <string> table_name [ ( column_name [, ...] ) ] (Required)
+  -m Month            <string> yyyymm for delete (Required)
+  -c Config file      <string> Config file path (Default ~/psql_config.sh)
+  -s File migrate dir <string> CSV file migration dir (Default /vagrant/migration/yyyymm)
 EOM
   exit 2
 }
 
 ym_col_name=test_ym
+migration_dir="/vagrant/migration/yyyymm"
 
 # デフォルト値設定
 encoding_option=""
@@ -72,12 +74,14 @@ if [ ${result} -ne 0 ] ; then
   echo "psql delete error."
   exit ${result}
 fi
+result=0
 psql ${DB_NAME} -U ${USER_NAME} -p ${PORT} -h ${HOST} -c "\COPY ${table} FROM '${csv_file}' WITH ( DELIMITER ',', FORMAT CSV, HEADER ${header}${encoding_option})" 
 result=$?
 if [ ${result} -ne 0 ] ; then
   echo "psql copy error."
-  exit ${result}
 fi
 
-# 正常終了
-exit 0
+migration_dir="$(echo "${migration_dir}" | sed "s/yyyymm/${yyyymm}/g")"
+mkdir -p ${migration_dir}
+cp "${csv_file}" "${migration_dir}/${table}.csv"
+exit ${result}

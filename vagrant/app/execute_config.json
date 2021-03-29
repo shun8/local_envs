@@ -7,12 +7,20 @@
         "subject": "test_yyyymm",
         "text": "files\nexport test\n"
     },
+    "log": "./log/test.log",
     "commands": [
         {
-            "command": "",
+            "command": "./testsh/test1.sh",
             "options": [
-                "",
-                ""
+                "-a testa",
+                "-b testb"
+            ]
+        },
+        {
+            "command": "./testsh/test2.sh",
+            "options": [
+                "-a testa",
+                "-b testb"
             ]
         }
     ]
