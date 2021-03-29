@@ -18,9 +18,9 @@ function send_error_mail {
   list=$(echo "${mail_config}" |jq ".to")
   len=$(echo "${list}" | jq length)
   for i in $( seq 0 $(($len - 1)) ); do
-    mail_to=$(echo "${list}" | jq -r .[$i])
-    aws ses send-email --to "${mail_to}" --from "${mail_from}" --subject "${mail_subject}" --text "$(echo -e "${mail_text}")"
-    result=$?
+    local to=$(echo "${list}" | jq -r .[$i])
+    aws ses send-email --to "${to}" --from "${from}" --subject "${subject}" --text "$(echo -e "${text}")"
+    local result=$?
     if [ ${result} -ne 0 ] ; then
       echo "ses error."
       exit ${result}
