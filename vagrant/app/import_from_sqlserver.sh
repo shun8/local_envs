@@ -6,7 +6,7 @@ Usage: $(basename "$0") [OPTION]...
   -s SQL file                 <string> SQL file path (Required)
   -m Month                    <string> yyyymm (Required)
   -t Table name (import to)   <string> table_name [ ( column_name [, ...] ) ] (Required)
-  -v List of Vars ([var1=Value1,var2=Value2,...]) <list> List of sqlcmd params (Defarult [])
+  -v List of Vars (["var1=Value1","var2=Value2",...]) <list> List of sqlcmd params. yyyymm replase to Month. (Defarult [])
   -c Config file              <string> Config file path (Default ~/sqlcmd_config.sh)
 EOM
   exit 2
@@ -67,7 +67,7 @@ len=$(echo "${var_list}" | jq length)
 for i in $( seq 0 $(($len - 1)) ); do
   l_var=$(echo "${var_list}" | jq -r .[$i])
   if [ ${l_var} != "null" ] ; then
-    vars_op="${vars_op} -v ${l_var}"
+    vars_op="${vars_op}"$(echo " -v ${l_var}" | sed "s/yyyymm/${yyyymm}/g")
   fi
 done
 

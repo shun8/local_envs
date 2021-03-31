@@ -36,9 +36,9 @@ len=$(jq length ${json_file})
 for i in $( seq 0 $(($len - 1)) ); do
   file_path=$(jq -r .[$i].file_path ${json_file})
   table=$(jq -r .[$i].table ${json_file})
-  vars=$(jq -r .[$i].vars ${json_file})
+  vars=$(jq -c -r .[$i].vars ${json_file})
   if [ "${vars}" != "null" ] ; then
-    vars_op=" -v "$(echo ${vars} | sed "s/yyyymm/${yyyymm}/g" | tr -d " ")
+    vars_op=" -v "$(echo ${vars} | tr -d " ")
   else
     vars_op=""
   fi

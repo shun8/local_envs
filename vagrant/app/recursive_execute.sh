@@ -63,7 +63,7 @@ for i in $(seq 0 $(($len - 1))); do
     op_len=$(echo "${options}" | jq length)
     for j in $(seq 0 $((${op_len} - 1))); do
       option=$(echo "${options}" | jq -r .[$j])
-      options_op="$(echo "${options_op} ${option}" | sed "s/yyyymm/${yyyymm}/g")"
+      options_op="$(echo "${options_op} ${option})"
     done
   fi
 
