@@ -51,7 +51,7 @@ while getopts ":j:m:h" OPTKEY; do
   esac
 done
 
-log_file=$(jq -r .log ${json_file})
+log_file=$(jq -r ".log" ${json_file})
 log_file=$(cd $(dirname ${log_file}) && pwd)/$(basename ${log_file})
 
 len=$(jq ".commands | length" ${json_file})
@@ -63,17 +63,20 @@ for i in $(seq 0 $(($len - 1))); do
     op_len=$(echo "${options}" | jq length)
     for j in $(seq 0 $((${op_len} - 1))); do
       option=$(echo "${options}" | jq -r .[$j])
-      options_op="$(echo "${options_op} ${option})"
+      options_op="$(echo "${options_op} ${option}")"
     done
   fi
+  needs_error_mail=$(jq -r .commands[$i].needs_error_mail ${json_file} | tr [:lower:] [:upper:])
 
   echo "$(date '+%Y-%m-%dT%H:%M:%S') START :  ${command} -m ${yyyymm} ${options_op}" >> "${log_file}"
   ${command} -m ${yyyymm} ${options_op} >> ${log_file} 2>&1
   result=$?
   if [ ${result} -ne 0 ] ; then
-    echo "$(date '+%Y-%m-%dT%H:%M:%S') ERROR :  ${command} -m ${yyyymm} ${options_op}" >> "${log_file}"
-    mail_config="$(jq -r .mail ${json_file})"
-    send_error_mail "${mail_config}" "ERROR :  ${command} -m ${yyyymm} ${options_op}"
+    if [ ${needs_error_mail} != "FALSE" ] ; then
+      echo "$(date '+%Y-%m-%dT%H:%M:%S') ERROR :  ${command} -m ${yyyymm} ${options_op}" >> "${log_file}"
+      mail_config="$(jq -r .mail ${json_file})"
+      send_error_mail "${mail_config}" "ERROR :  ${command} -m ${yyyymm} ${options_op}"
+    fi
     exit ${result}
   fi
   echo "$(date '+%Y-%m-%dT%H:%M:%S') FINISH:  ${command} -m ${yyyymm} ${options_op}" >> "${log_file}"

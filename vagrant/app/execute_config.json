@@ -10,6 +10,17 @@
     "log": "./log/test.log",
     "commands": [
         {
+            "command": "./check_date.sh",
+            "needs_error_mail": "false"
+        },
+        {
+            "command": "./check_by_sqlserver.sh",
+            "options": [
+                "-s /vagrant/testsql/test9.sql",
+                "-b testb"
+            ]
+        },
+        {
             "command": "./testsh/test1.sh",
             "options": [
                 "-a testa",
